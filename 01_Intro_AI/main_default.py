@@ -108,6 +108,10 @@ print(response1['messages'][-1]['content'])
 
 # see gogle gemini models to choose appropriate one
 
+Ключи gemini google keys
+https://aistudio.google.com/app/api-keys
+
+
 model = init_chat_model(model="gemini-3-flash-preview", model_provider="google-genai", api_key=GOOGLE_API_KEY)
 
 

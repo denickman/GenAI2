@@ -1,0 +1,23 @@
+for launching scrip on the regular basis use
+pythonanywhere.com
+
+go to files -  upload your files
+select Tasks item menu - schedule task time -
+
+
+to see all the requirments see this teaching video
+https://www.udemy.com/course/ai-developer-bootcamp/learn/lecture/55318633#overview
+
+
+Да, PythonAnywhere — рабочий и довольно простой вариант, у них есть встроенная фича Scheduled Tasks (Task тab в дашборде). Но не совсем "просто загрузили и всё" — есть несколько нюансов.
+
+Как это работает:
+
+Files → загружаешь туда свой main.py (и .env, если используешь — но лучше секреты хранить не в файле, а через переменные окружения в самом PythonAnywhere, см. ниже).
+Consoles → Bash → создаёшь виртуальное окружение и ставишь зависимости:
+bash
+mkvirtualenv myenv --python=python3.11
+pip install google-api-python-client python-dotenv langchain langchain-anthropic
+Tasks tab → там указываешь:
+команду запуска, например: /home/username/.virtualenvs/myenv/bin/python /home/username/main.py
+время запуска (например, 09:00)

@@ -3,6 +3,13 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 import os
+from langchain_anthropic import ChatAnthropic
+from langgraph.checkpoint.memory import InMemorySaver
+
+from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoint.postgres import PostgresSaver
+
+
 
 
 load_dotenv()
@@ -19,12 +26,14 @@ def get_weather(city: str):
     }
     response = requests.get(base_url, params=params)
     data = response.json()
-     
+
     temperature_celsius = data['main']['temp']
     temperature_fahrenheit = temperature_celsius * 9/5 + 32
 
     return data, {'temperature_fahrenheit': temperature_fahrenheit}
 
+
+# Get location from API
 def get_location():
     """Get user's current location. Use this when the user asks about weather."""
     response = requests.get("https://ipapi.co/json/", headers = {'User-agent': 'your-bot 0.1'})
@@ -33,11 +42,23 @@ def get_location():
     country = data.get('country_name')
     return f"{city}, {country}"
 
+
+
+
+
+
+
 # Initialize Gemini Flash 2.5
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
+llm_gemini = ChatGoogleGenerativeAI(
+    model="claude-sonnet-4-6",
     temperature=0.7,
 )
+
+llm_antropic = ChatAnthropic(
+    model="claude-sonnet-4-6",
+    temperature=0.7,
+)
+
 system_prompt = """
 You are a helpful weather assistant. 
 YOUR WORKFLOW:
@@ -52,11 +73,75 @@ YOUR WORKFLOW:
 4. Present the weather information including temperature, condition, wind speed, and any other relevant details.
 
 """
-agent = create_agent(
-    model=llm,
-    tools=[get_weather, get_location],
-    system_prompt=system_prompt
-)
+
+
+# for storing in RAM using InMemorySaver
+# agent = create_agent(
+#     model=llm_antropic,
+#     tools=[get_weather, get_location],
+#     system_prompt=system_prompt,
+#     checkpointer=InMemorySaver(),
+# )
+
+
+# for storing in Postgres use Postgressaver
+# with PostgresSaver() as postgres: also need checkpoint.setup()
+
+# for storing in SQL DB use SqliteSaver
+with SqliteSaver.from_conn_string('checkpoints.db') as checkpoint:
+    agent = create_agent(
+        model=llm_antropic,
+        tools=[get_weather, get_location],
+        system_prompt=system_prompt,
+        checkpointer=checkpoint,
+    )
+
+    while True:
+        user_query1 = input("enter your query: ")
+        if user_query1 in ['bye', 'quit', 'exit']:
+            break
+
+        response1 = agent.invoke({"messages": [{'role':'user', 'content':user_query1}]},
+                                 {"configurable": {"thread_id":"1"}})
+        print(response1['messages'][-1].content)
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+# user_query2 = input("enter your query: ")
+# response2 = agent.invoke({"messages": [{'role':'user', 'content':user_query2}]},
+#                          {"configurable": {"thread_id":"1"}})
+#
+# print(response2['messages'][-1].content)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     user_query = input("Enter your query: ")

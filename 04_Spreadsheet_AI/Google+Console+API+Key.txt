@@ -1,0 +1,29 @@
+https://console.cloud.google.com/apis/dashboard
+for google api key
+
+https://console.cloud.google.com/apis/credentials?project=notae-development
+
+
+go to this web page
+find - Enable APIs and services
+
+then on the next page - insert in search area - 'sheets' - then select found 'sheet option' - then press Enable button
+
+that way you are giving the permissions to connect your app to the spreadsheets via api
+
+
+next select 'manage' - go to the credentials option on the left bar menu
+
+also when you create new api key - select option - do not restrict api key
+
+
+next go to your sheets - select the proper sheet - share this sheet with anyone who has the link to this sheet
+https://docs.google.com/spreadsheets/d/14OFwF-shm7GGDOceRghZ2vrsqxzHdV2oQG_LYPXOXcY/edit?gid=1251211959#gid=1251211959
+
+select all after d/
+
+
+
+
+
+
