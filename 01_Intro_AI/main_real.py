@@ -3,6 +3,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 import os
+from langchain_anthropic import ChatAnthropic
 
 
 load_dotenv()
@@ -19,7 +20,7 @@ def get_weather(city: str):
     }
     response = requests.get(base_url, params=params)
     data = response.json()
-     
+
     temperature_celsius = data['main']['temp']
     temperature_fahrenheit = temperature_celsius * 9/5 + 32
 
@@ -34,10 +35,16 @@ def get_location():
     return f"{city}, {country}"
 
 # Initialize Gemini Flash 2.5
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
+llm_gemini = ChatGoogleGenerativeAI(
+    model="claude-sonnet-4-6",
     temperature=0.7,
 )
+
+llm_antropic = ChatAnthropic(
+    model="claude-sonnet-4-6",
+    temperature=0.7,
+)
+
 system_prompt = """
 You are a helpful weather assistant. 
 YOUR WORKFLOW:
@@ -53,7 +60,7 @@ YOUR WORKFLOW:
 
 """
 agent = create_agent(
-    model=llm,
+    model=llm_antropic,
     tools=[get_weather, get_location],
     system_prompt=system_prompt
 )
