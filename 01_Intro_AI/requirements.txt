@@ -6,3 +6,5 @@ requests
 langchain-anthropic
 langgraph-checkpoint-sqlite
 langgraph-checkpoint-postgres
+Flask
+langgraph
