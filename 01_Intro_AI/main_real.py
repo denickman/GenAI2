@@ -6,6 +6,12 @@ import os
 from langchain_anthropic import ChatAnthropic
 from langgraph.checkpoint.memory import InMemorySaver
 
+from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoint.postgres import PostgresSaver
+
+
+
+
 load_dotenv()
 
 def get_weather(city: str):
@@ -59,27 +65,46 @@ YOUR WORKFLOW:
 4. Present the weather information including temperature, condition, wind speed, and any other relevant details.
 
 """
-agent = create_agent(
-    model=llm_antropic,
-    tools=[get_weather, get_location],
-    system_prompt=system_prompt,
-    checkpointer=InMemorySaver(),
-)
+
+
+# for storing in RAM using InMemorySaver
+# agent = create_agent(
+#     model=llm_antropic,
+#     tools=[get_weather, get_location],
+#     system_prompt=system_prompt,
+#     checkpointer=InMemorySaver(),
+# )
+
+
+# for storing in Postgres use Postgressaver
+# with PostgresSaver() as postgres: also need checkpoint.setup()
+
+# for storing in SQL DB use SqliteSaver
+with SqliteSaver.from_conn_string('checkpoints.db') as checkpoint:
+    agent = create_agent(
+        model=llm_antropic,
+        tools=[get_weather, get_location],
+        system_prompt=system_prompt,
+        checkpointer=checkpoint,
+    )
+
+    while True:
+        user_query1 = input("enter your query: ")
+        if user_query1 in ['bye', 'quit', 'exit']:
+            break
+
+        response1 = agent.invoke({"messages": [{'role':'user', 'content':user_query1}]},
+                                 {"configurable": {"thread_id":"1"}})
+        print(response1['messages'][-1].content)
 
 
 
-while True:
-    user_query1 = input("enter your query: ")
-
-    if user_query1 in ['bye', 'quit', 'exit']:
-        break
-
-    response1 = agent.invoke({"messages": [{'role':'user', 'content':user_query1}]},
-                             {"configurable": {"thread_id":"1"}})
 
 
 
-    print(response1['messages'][-1].content)
+
+
+
 
 
 

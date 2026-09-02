@@ -4,3 +4,5 @@ langchain-google-genai
 python-dotenv
 requests
 langchain-anthropic
+langgraph-checkpoint-sqlite
+langgraph-checkpoint-postgres
