@@ -68,22 +68,28 @@ agent = create_agent(
 
 
 
-user_query1 = input("enter your query: ")
+while True:
+    user_query1 = input("enter your query: ")
 
-response1 = agent.invoke({"messages": [{'role':'user', 'content':user_query1}]},
-                         {"configurable": {"thread_id":"1"}})
+    if user_query1 in ['bye', 'quit', 'exit']:
+        break
 
-print(response1['messages'][-1].content)
-
-
-
+    response1 = agent.invoke({"messages": [{'role':'user', 'content':user_query1}]},
+                             {"configurable": {"thread_id":"1"}})
 
 
-user_query2 = input("enter your query: ")
-response2 = agent.invoke({"messages": [{'role':'user', 'content':user_query2}]},
-                         {"configurable": {"thread_id":"1"}})
 
-print(response2['messages'][-1].content)
+    print(response1['messages'][-1].content)
+
+
+
+
+#
+# user_query2 = input("enter your query: ")
+# response2 = agent.invoke({"messages": [{'role':'user', 'content':user_query2}]},
+#                          {"configurable": {"thread_id":"1"}})
+#
+# print(response2['messages'][-1].content)
 
 
 
