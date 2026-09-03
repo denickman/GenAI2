@@ -9,6 +9,11 @@ history = []
 while True:
     user_input = input("You: ")
     history.append({"role": "user", "content": user_input})
+
+    # Отправляется реальный HTTP-запрос на сервер (терминал 1 - main.app). Тело запроса (JSON):
+    # и потом
+    #  requests.post(...) наконец получает ответ (строка response = requests.post(...) наконец "разблокировалась") —
+    #  response теперь содержит этот JSON.
     response = requests.post(
         url,
         json={"messages": history})
