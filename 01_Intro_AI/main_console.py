@@ -32,6 +32,8 @@ def get_weather(city: str):
 
     return data, {'temperature_fahrenheit': temperature_fahrenheit}
 
+
+# Get location from API
 def get_location():
     """Get user's current location. Use this when the user asks about weather."""
     response = requests.get("https://ipapi.co/json/", headers = {'User-agent': 'your-bot 0.1'})
@@ -39,6 +41,12 @@ def get_location():
     city = data['city']
     country = data.get('country_name')
     return f"{city}, {country}"
+
+
+
+
+
+
 
 # Initialize Gemini Flash 2.5
 llm_gemini = ChatGoogleGenerativeAI(

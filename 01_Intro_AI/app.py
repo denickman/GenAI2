@@ -3,6 +3,8 @@ from operator import truediv
 from flask import Flask, render_template, request, redirect, url_for, session
 from main_flask import agent
 
+import uuid
+
 app = Flask(__name__)
 app.secret_key = 'random_generated_string_key'
 
@@ -28,16 +30,34 @@ Flask подписывает (не шифрует полностью, а име�
 # define the root
 @app.route('/')
 def home():
+    if 'thread_id' not in session:
+        session['thread_id'] = str(uuid.uuid4())
+
     if 'messages' not in session:
         session['messages'] = []
+        
     return render_template('chat.html', messages=session['messages'])
+
+
+@app.route('/clear')
+def clear():
+    session.clear()
+    return redirect(url_for('home'))
 
 
 @app.route('/send', methods=['POST'])
 def send():
     user_message = request.form['message']
+
+    user_lat = request.form.get('latitude')
+    user_lon = request.form.get('longitude')
+
+
+    if user_lat and user_lon:
+        session['user_location'] = {'lat': user_lat, 'lon': user_lon}
+
     response = agent.invoke({"messages": [{'role': 'user', 'content': user_message}]},
-                            {"configurable": {"thread_id": "1"}})
+                            {"configurable": {"thread_id":  session['thread_id']}})
 
 
     # session['messages'] = []

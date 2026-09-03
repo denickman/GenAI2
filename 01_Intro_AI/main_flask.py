@@ -8,6 +8,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.checkpoint.postgres import PostgresSaver
+from flask import session
 
 load_dotenv()
 
@@ -31,13 +32,31 @@ def get_weather(city: str):
     return data, {'temperature_fahrenheit': temperature_fahrenheit}
 
 
+# def get_location():
+#     """Get user's current location. Use this when the user asks about weather."""
+#     response = requests.get("https://ipapi.co/json/", headers={'User-agent': 'your-bot 0.1'})
+#     data = response.json()
+#     city = data['city']
+#     country = data.get('country_name')
+#     return f"{city}, {country}"
+
+
+# GEt location from JavaScript
 def get_location():
+
     """Get user's current location. Use this when the user asks about weather."""
-    response = requests.get("https://ipapi.co/json/", headers={'User-agent': 'your-bot 0.1'})
+
+    lat = session['user_location']['lat']
+    lon = session['user_location']['lon']
+
+    response = requests.get(f'https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json'
+                            , headers={'User-Agent': 'WeatherAssistant/1.0'}, timeout=3)
     data = response.json()
-    city = data['city']
-    country = data.get('country_name')
+    city = data['address'].get('city', data['address'].get('town', 'Unknown'))
+    country = data['address'].get('country', '')
+
     return f"{city}, {country}"
+
 
 
 # Initialize Gemini Flash 2.5
