@@ -62,37 +62,40 @@ key = os.getenv("GOOGLE_API_KEY")
 print(f"Ключ: {repr(key)}")  # временно, чтобы увидеть, что реально загрузилось
 
 
-
-
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 
-interaction = client.interactions.create(
-    model="gemini-3.8-flash",
-    input="Explain how AI works in a few words"
-)
-print("====INTERACTION====")
-print(interaction.output_text)
-
-
-
-
-response = client.models.generate_content(
-    model='gemini-3-pro-image-preview',
-    contents=['create me an image of a bird swimming in the sea']
-)
-
-# Проверка и сохранение
+# Тест 1: проверка ключа и SDK через новый Interactions API
 try:
+    interaction = client.interactions.create(
+        model="gemini-3.8-flash",
+        input="Explain how AI works in a few words"
+    )
+    print("====INTERACTION====")
+    print(interaction.output_text)
+except Exception as e:
+    print(f"❌ Interaction error: {e}")
+
+
+# Тест 2: генерация изображения через старый метод generate_content
+try:
+    response = client.models.generate_content(
+        model='gemini-3-pro-image-preview',
+        contents=['create me an image of a bird swimming in the sea']
+    )
+
+    # Проверка и сохранение
     if response.parts and len(response.parts) > 0:
         part = response.parts[0]
 
-        if hasattr(part, 'inline_data'):
+        if hasattr(part, 'inline_data') and part.inline_data is not None:
             image_bytes = part.inline_data.data
 
             with open('generated_image.png', 'wb') as f:
                 f.write(image_bytes)
 
             print("✅ Image saved as generated_image.png")
+        else:
+            print("⚠️ В ответе нет картинки:", part)
 except Exception as e:
-    print(f"❌ Error: {e}")
+    print(f"❌ Image generation error: {e}")
