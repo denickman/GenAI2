@@ -58,8 +58,24 @@ import os
 '''
 
 load_dotenv()
+key = os.getenv("GOOGLE_API_KEY")
+print(f"Ключ: {repr(key)}")  # временно, чтобы увидеть, что реально загрузилось
+
+
+
 
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+
+
+interaction = client.interactions.create(
+    model="gemini-3.8-flash",
+    input="Explain how AI works in a few words"
+)
+print("====INTERACTION====")
+print(interaction.output_text)
+
+
+
 
 response = client.models.generate_content(
     model='gemini-3-pro-image-preview',
