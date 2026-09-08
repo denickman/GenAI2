@@ -1,3 +1,7 @@
 langchain
 langchain-google-genai
 python-dotenv
+pypdf
+langchain-huggingface
+sentence-transformers
+langchain-community
